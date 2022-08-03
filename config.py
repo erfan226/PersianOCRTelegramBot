@@ -1,3 +1,0 @@
-BOT_TOKEN='5379995470:AAHugxebgay3i0-DzI2niA7RicWswRjDyTw'
-CACHE_DIR='../cache'
-CACHE_TEMP=False
