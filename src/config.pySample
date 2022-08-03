@@ -1,0 +1,3 @@
+BOT_TOKEN=''
+CACHE_DIR='../cache'
+CACHE_TEMP=False
