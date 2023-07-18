@@ -7,9 +7,8 @@ import config
 import errno
 import os
 from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram.ext import MessageHandler, Filters
-
+from telegram.ext import MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 def resolve_args():
 	parser = argparse.ArgumentParser()
@@ -22,7 +21,6 @@ def resolve_args():
 
 def main():
 	resolve_args()
-
 	os.chdir(os.path.split(os.path.abspath(__file__))[0])
 
 	try:
@@ -31,35 +29,30 @@ def main():
 	    if e.errno != errno.EEXIST:
 	        raise e
 
-	updater = Updater(token=config.BOT_TOKEN,use_context=True)
+	updater = ApplicationBuilder().token(config.BOT_TOKEN).build()
 
-	dispatcher = updater.dispatcher
-	print(updater.bot.getMe())
-	
-    
-	updater.dispatcher.add_handler(MessageHandler(Filters.document.mime_type("image/jpeg"), handler.Photo))
-	updater.dispatcher.add_handler(MessageHandler(Filters.document.mime_type("image/png"), handler.Photo))
-	updater.dispatcher.add_handler(MessageHandler(Filters.document.mime_type("image/jpg"), handler.Photo))
+	updater.add_handler(MessageHandler(filters.Document.MimeType("image/jpeg"), handler.Photo))
+	updater.add_handler(MessageHandler(filters.Document.MimeType("image/png"), handler.Photo))
+	updater.add_handler(MessageHandler(filters.Document.MimeType("image/jpg"), handler.Photo))
 
-
-	
 	start_handler = CommandHandler('start', handler.start)
-	dispatcher.add_handler(start_handler)
+	updater.add_handler(start_handler)
 
 	help_handler = CommandHandler('help', handler.help)
-	dispatcher.add_handler(help_handler)
+	updater.add_handler(help_handler)
 
-	tesseract_handler = CommandHandler('tesseract',handler.tesseract)
-	dispatcher.add_handler(tesseract_handler)
+	tesseract_handler = CommandHandler('tesseract', handler.tesseract)
+	updater.add_handler(tesseract_handler)
 
-	message_handler = MessageHandler(Filters.photo,handler.message)
-	dispatcher.add_handler(message_handler)
+	# message_handler = MessageHandler(filters._Photo, handler.message)
+	message_handler = MessageHandler(filters.Document.MimeType("image/jpeg"), handler.message)
+	updater.add_handler(message_handler)
 
-	unknown_handler = MessageHandler(Filters.command,handler.unknown)
-	dispatcher.add_handler(unknown_handler)
+	# unknown_handler = MessageHandler(filters.Command,handler.unknown)
+	unknown_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handler.unknown)
+	updater.add_handler(unknown_handler)
 
-	updater.start_polling()
-
+	updater.run_polling()
 
 if __name__ == '__main__':
 	main()
