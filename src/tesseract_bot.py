@@ -29,30 +29,30 @@ def main():
 	    if e.errno != errno.EEXIST:
 	        raise e
 
-	updater = ApplicationBuilder().token(config.BOT_TOKEN).build()
+	app = ApplicationBuilder().token(config.BOT_TOKEN).build()
 
-	updater.add_handler(MessageHandler(filters.Document.MimeType("image/jpeg"), handler.Photo))
-	updater.add_handler(MessageHandler(filters.Document.MimeType("image/png"), handler.Photo))
-	updater.add_handler(MessageHandler(filters.Document.MimeType("image/jpg"), handler.Photo))
+	app.add_handler(MessageHandler(filters.Document.MimeType("image/jpeg"), handler.Photo))
+	app.add_handler(MessageHandler(filters.Document.MimeType("image/png"), handler.Photo))
+	app.add_handler(MessageHandler(filters.Document.MimeType("image/jpg"), handler.Photo))
 
 	start_handler = CommandHandler('start', handler.start)
-	updater.add_handler(start_handler)
+	app.add_handler(start_handler)
 
 	help_handler = CommandHandler('help', handler.help)
-	updater.add_handler(help_handler)
+	app.add_handler(help_handler)
 
 	tesseract_handler = CommandHandler('tesseract', handler.tesseract)
-	updater.add_handler(tesseract_handler)
+	app.add_handler(tesseract_handler)
 
 	# message_handler = MessageHandler(filters._Photo, handler.message)
 	message_handler = MessageHandler(filters.Document.MimeType("image/jpeg"), handler.message)
-	updater.add_handler(message_handler)
+	app.add_handler(message_handler)
 
 	# unknown_handler = MessageHandler(filters.Command,handler.unknown)
 	unknown_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, handler.unknown)
-	updater.add_handler(unknown_handler)
+	app.add_handler(unknown_handler)
 
-	updater.run_polling()
+	app.run_polling()
 
 if __name__ == '__main__':
 	main()
